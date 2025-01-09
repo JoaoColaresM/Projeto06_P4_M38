@@ -22,7 +22,7 @@ export const Row = styled.div<RowProps>`
 
 export const InputGroup = styled.div<InputGroupProps>`
   flex: auto;
-  max-width: ${(props) => props.maxWidth || 'auto'}
+  max-width: ${(props) => props.maxWidth || 'auto'};
 
   label {
     font-size: 14px;
