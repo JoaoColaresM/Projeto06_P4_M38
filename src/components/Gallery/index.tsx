@@ -1,27 +1,13 @@
+import { useState } from "react"
+
 import Section from "../../components/Section"
-import spiderman from '../../assets/images/banner-homem-aranha.png'
-import hogwarts from '../../assets/images/fundo_hogwarts.png'
+import { GalleryItem } from "../../pages/Home"
+
 import play from '../../assets/images/play.png'
 import zoom from '../../assets/images/zoom.png'
 import fechar from '../../assets/images/fechar.png'
-import { Item, Items, Action, Modal, ModalContent } from './styles'
-import { useState } from "react"
-import { GalleryItem } from "../../pages/Home"
 
-const mock: GalleryItem[] = [
-  {
-    type: 'image',
-    url: spiderman,
-  },
-  {
-    type: 'image',
-    url: hogwarts,
-  },
-  {
-    type: 'video',
-    url: 'https://www.youtube.com/embed/uHGShqcAH1Q',
-  },
-]
+import { Item, Items, Action, Modal, ModalContent } from './styles'
 
 type Props = {
   defaultCover: string
@@ -88,19 +74,19 @@ const Galley = ({ defaultCover, name, items }: Props) => {
           <header>
             <h4>{name}</h4>
             <img src={fechar} alt="ícone fechar"
-            onClick={() =>
-              closeModal()
-            } />
+              onClick={() =>
+                closeModal()
+              } />
           </header>
           {modal.type === 'image' ? (
             <img src={modal.url} alt="spiderman" />
           ) : (
-            <iframe frameBorder={0} src={modal.url}/>
+            <iframe frameBorder={0} src={modal.url} />
           )}
         </ModalContent>
         <div
-        className="overlay"
-        onClick={() => closeModal()}
+          className="overlay"
+          onClick={() => closeModal()}
         ></div>
       </Modal>
     </>

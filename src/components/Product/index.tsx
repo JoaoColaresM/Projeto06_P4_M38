@@ -1,5 +1,5 @@
 import Tag from "../Tag"
-import {Card, Descricao, Titulo, Infos} from "./styles"
+import { Card, Descricao, Titulo, Infos } from "./styles"
 
 type Props = {
   title: string
@@ -11,8 +11,8 @@ type Props = {
   id: number
 }
 
-const Product = ({category, description, image, infos, system, title, id} : Props) => {
-  const getDescricao = (descricao:string) => {
+const Product = ({ category, description, image, infos, system, title, id }: Props) => {
+  const getDescricao = (descricao: string) => {
     if (descricao.length > 95) {
       return descricao.slice(0, 92) + '...'
     }
@@ -20,19 +20,22 @@ const Product = ({category, description, image, infos, system, title, id} : Prop
   }
 
   return (
-    <Card to={`/product/${id}`}>
-    <img src = {image} alt = {title}/>
-    <Infos>
-      {infos.map((info) => (
-        <Tag key={info}>{info}</Tag>
-      ))}
-    </Infos>
-    <Titulo>{title}</Titulo>
-    <Tag>{category}</Tag>
-    <Tag>{system}</Tag>
-    <Descricao>{getDescricao(description)}</Descricao>
-  </Card>
-)
+    <Card
+      title={`Clique aqui para ver mais detalhes do jogo: ${title}`}
+      to={`/product/${id}`}
+    >
+      <img src={image} alt={title} />
+      <Infos>
+        {infos.map((info) => (
+          <Tag key={info}>{info}</Tag>
+        ))}
+      </Infos>
+      <Titulo>{title}</Titulo>
+      <Tag>{category}</Tag>
+      <Tag>{system}</Tag>
+      <Descricao>{getDescricao(description)}</Descricao>
+    </Card>
+  )
 }
 
 export default Product
