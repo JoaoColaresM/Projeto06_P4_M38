@@ -5,8 +5,8 @@ import { useFormik } from "formik"
 import Button from "../../components/Button"
 import Card from "../../components/Card"
 
-import boleto from '../../assets/images/boleto.svg'
-import cartao from '../../assets/images/cartao.svg'
+import barCode from '../../assets/images/boleto.svg'
+import creditCard from '../../assets/images/cartao.svg'
 
 import { usePurchaseMutation } from '../../services/api'
 
@@ -176,14 +176,14 @@ const Checkout = () => {
               isActive={!payWithCard}
               onClick={() => setPayWithCard(false)}
             >
-              <img src={boleto} alt="boleto" />
+              <img src={barCode} alt="boleto" />
               Boleto bancário
             </TabButton>
             <TabButton
               isActive={payWithCard}
               onClick={() => setPayWithCard(true)}
             >
-              <img src={cartao} alt="Cartão de crédito" />
+              <img src={creditCard} alt="Cartão de crédito" />
               Cartão de crédito
             </TabButton >
             <div className="margin-top">
