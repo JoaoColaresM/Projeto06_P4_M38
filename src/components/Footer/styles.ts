@@ -21,7 +21,7 @@ export const Links = styled.ul`
 `
 
 export const Link = styled(HashLink)`
-  color: ${color.lightGray};
+  color: ${colors.lightGray};
   text-decoration: none;
   margin-right: 8px;
 `

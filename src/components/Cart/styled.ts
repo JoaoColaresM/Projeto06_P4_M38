@@ -50,7 +50,7 @@ export const Prices = styled.p`
   span{
     display: block;
     font-size: 12px;
-    color: ${color.lightGray};
+    color: ${colors.lightGray};
   }
 `
 
@@ -64,7 +64,7 @@ export const Quantity = styled.p`
 
 export const CartItem = styled.li`
   display: flex;
-  border-bottom: 1px solid ${color.lightGray};
+  border-bottom: 1px solid ${colors.lightGray};
   padding: 8px 0;
   position: relative;
 
