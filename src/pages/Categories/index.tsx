@@ -9,24 +9,21 @@ import {
 } from '../../services/api'
 
 const Categories = () => {
-  const { data: actionGames } = useGetActionGamesQuery()
-  const { data: sportnGames } = useGetSportGamesQuery()
-  const { data: simulationGames } = useGetSimulationGamesQuery()
-  const { data: fightGames } = useGetFightGamesQuery()
-  const { data: rpgGames } = useGetRpgGamesQuery()
+  const { data: actionGames, isLoading: isloadingAction } = useGetActionGamesQuery()
+  const { data: sportnGames, isLoading: isloadingSport } = useGetSportGamesQuery()
+  const { data: simulationGames, isLoading: isloadingSimulation } = useGetSimulationGamesQuery()
+  const { data: fightGames, isLoading: isloadingFight } = useGetFightGamesQuery()
+  const { data: rpgGames, isLoading: isloadingRpg } = useGetRpgGamesQuery()
 
-  if (actionGames && sportnGames && simulationGames && fightGames && rpgGames) {
     return (
       <>
-        <ProductsList games={actionGames} title='Ação' background='gray' id="action" />
-        <ProductsList games={sportnGames} title='Esportes' background='black' id="sports" />
-        <ProductsList games={fightGames} title='Luta' background='gray' id="fight" />
-        <ProductsList games={rpgGames} title='rpg' background='black' id="rpg" />
-        <ProductsList games={simulationGames} title='Simulação' background='gray' id="simulation" />
+        <ProductsList games={actionGames} title='Ação' background='gray' id="action" isLoading= {isloadingAction} />
+        <ProductsList games={sportnGames} title='Esportes' background='black' id="sports" isLoading= {isloadingSport} />
+        <ProductsList games={fightGames} title='Luta' background='gray' id="fight" isLoading= {isloadingFight} />
+        <ProductsList games={rpgGames} title='rpg' background='black' id="rpg" isLoading= {isloadingRpg} />
+        <ProductsList games={simulationGames} title='Simulação' background='gray' id="simulation" isLoading= {isloadingSimulation} />
       </>
     )
   }
-  return <h4>Carregando...</h4>
-}
 
 export default Categories
