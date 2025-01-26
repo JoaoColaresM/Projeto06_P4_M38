@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react"
 import * as Yup from 'yup'
 import { useFormik } from "formik"
-import { useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { Navigate } from "react-router-dom"
+import InputMask from "react-input-mask"
 
 import Button from "../../components/Button"
 import Card from "../../components/Card"
-import { RootReducer } from "../../store"
 
 import barCode from '../../assets/images/boleto.svg'
 import creditCard from '../../assets/images/cartao.svg'
@@ -14,6 +14,9 @@ import creditCard from '../../assets/images/cartao.svg'
 import { usePurchaseMutation } from '../../services/api'
 
 import { getTotalPrice, parseToBrl } from "../../utils"
+import { RootReducer } from "../../store"
+import {clear} from '../../store/reducers/cart'
+
 import { InputGroup, Row, TabButton } from "./styles"
 
 type Installment = {
@@ -24,9 +27,10 @@ type Installment = {
 
 const Checkout = () => {
   const [payWithCard, setPayWithCard] = useState(false)
-  const [purchase, { data, isSuccess }] = usePurchaseMutation()
+  const [purchase, { data, isSuccess, isLoading }] = usePurchaseMutation()
   const { items } = useSelector((state: RootReducer) => state.cart)
   const [installments, setInstallments] = useState<Installment[]>([])
+  const dispatch = useDispatch()
 
   const totalPrice = getTotalPrice(items)
 
@@ -73,7 +77,7 @@ const Checkout = () => {
       cardCode: Yup.string().when((values, schema) =>
         payWithCard ? schema.required('O campo é obrigatório') : schema
       ),
-      installments: Yup.string().when((values, schema) =>
+      installments: Yup.number().when((values, schema) =>
         payWithCard ? schema.required('O campo é obrigatório') : schema
       )
     }),
@@ -88,7 +92,7 @@ const Checkout = () => {
           email: values.deliveryEmail
         },
         payment: {
-          installments: 1,
+          installments: values.installments,
           card: {
             active: payWithCard,
             code: Number(values.cardCode),
@@ -99,17 +103,15 @@ const Checkout = () => {
               name: values.cardOwner
             },
             expires: {
-              month: 1,
-              year: 2023
+              month: Number(values.expiresMonth),
+              year: Number(values.expiresYear)
             }
           }
         },
-        products: [
-          {
-            id: 1,
-            price: 10
-          }
-        ]
+        products: items.map((item) => ({
+          id: item.id,
+          price: item.prices.current as number
+        }))
       })
     }
   })
@@ -142,13 +144,19 @@ const Checkout = () => {
     }
   }, [totalPrice])
 
-  if (items.length === 0) {
-    return <Navigate to='/' />
+  useEffect(() => {
+    if (isSuccess) {
+      dispatch(clear())
+    }
+  }, [isSuccess, dispatch])
+
+  if (items.length === 0 && !isSuccess) {
+    return <Navigate to="/" />
   }
 
   return (
     <div className="container">
-      {isSuccess ? (
+      {isSuccess && data ? (
         <Card title="Muito obrigado">
           <>
             <p>
@@ -188,7 +196,7 @@ const Checkout = () => {
                 </InputGroup>
                 <InputGroup>
                   <label htmlFor="cpf">CPF</label>
-                  <input id="cpf" type="text" name="cpf" value={form.values.cpf} onChange={form.handleChange} onBlur={form.handleBlur} className={checkInputHasError('cpf') ? 'error' : ''} />
+                  <InputMask id="cpf" type="text" name="cpf" value={form.values.cpf} onChange={form.handleChange} onBlur={form.handleBlur} className={checkInputHasError('cpf') ? 'error' : ''} mask='999.999.999-99'/>
                 </InputGroup>
               </Row>
               <h3 className="margin-top">Dados de entrega - conteúdo digital</h3>
@@ -232,7 +240,7 @@ const Checkout = () => {
                       </InputGroup>
                       <InputGroup>
                         <label htmlFor="cpfCardOwner">CPF do titular do cartão</label>
-                        <input type="text" id="cpfCardOwner" name="cpfCardOwner" value={form.values.cpfCardOwner} onChange={form.handleChange} onBlur={form.handleBlur} className={checkInputHasError('cpfCardOwner') ? 'error' : ''} />
+                        <InputMask type="text" id="cpfCardOwner" name="cpfCardOwner" value={form.values.cpfCardOwner} onChange={form.handleChange} onBlur={form.handleBlur} className={checkInputHasError('cpfCardOwner') ? 'error' : ''} mask='999.999.999-99'/>
                       </InputGroup>
                     </Row>
                     <Row marginTop="24px">
@@ -242,19 +250,19 @@ const Checkout = () => {
                       </InputGroup>
                       <InputGroup>
                         <label htmlFor="cardNumber">Número do cartão</label>
-                        <input type="text" id="cardNumber" name="cardNumber" value={form.values.cardNumber} onChange={form.handleChange} onBlur={form.handleBlur} className={checkInputHasError('cardNumber') ? 'error' : ''} />
+                        <InputMask type="text" id="cardNumber" name="cardNumber" value={form.values.cardNumber} onChange={form.handleChange} onBlur={form.handleBlur} className={checkInputHasError('cardNumber') ? 'error' : ''} mask='9999 9999 9999 9999'/>
                       </InputGroup>
                       <InputGroup maxWidth='123px'>
                         <label htmlFor="expiresMonth">Mês do vencimento</label>
-                        <input type="text" id="expiresMonth" name="expiresMonth" value={form.values.expiresMonth} onChange={form.handleChange} onBlur={form.handleBlur} className={checkInputHasError('expiresMonth') ? 'error' : ''} />
+                        <InputMask type="text" id="expiresMonth" name="expiresMonth" value={form.values.expiresMonth} onChange={form.handleChange} onBlur={form.handleBlur} className={checkInputHasError('expiresMonth') ? 'error' : ''} mask='99'/>
                       </InputGroup>
                       <InputGroup maxWidth='123px'>
                         <label htmlFor="expiresYear">Ano de vencimento</label>
-                        <input type="text" id="expiresYear" name="expiresYear" value={form.values.expiresYear} onChange={form.handleChange} onBlur={form.handleBlur} className={checkInputHasError('expiresYear') ? 'error' : ''} />
+                        <InputMask type="text" id="expiresYear" name="expiresYear" value={form.values.expiresYear} onChange={form.handleChange} onBlur={form.handleBlur} className={checkInputHasError('expiresYear') ? 'error' : ''} mask='99'/>
                       </InputGroup>
                       <InputGroup maxWidth='48px'>
                         <label htmlFor="cardCode">CVV</label>
-                        <input type="text" id="cardCode" name="cardCode" value={form.values.cardCode} onChange={form.handleChange} onBlur={form.handleBlur} className={checkInputHasError('cardCode') ? 'error' : ''} />
+                        <InputMask type="text" id="cardCode" name="cardCode" value={form.values.cardCode} onChange={form.handleChange} onBlur={form.handleBlur} className={checkInputHasError('cardCode') ? 'error' : ''} mask='999'/>
                       </InputGroup>
                     </Row>
                     <Row marginTop="24px">
@@ -263,7 +271,7 @@ const Checkout = () => {
                         <select id="installments" name="installments" value={form.values.installments} onChange={form.handleChange} onBlur={form.handleBlur} className={checkInputHasError('installments') ? 'error' : ''}
                         >
                           {installments.map((installment) => (
-                            <option key={installment.quantity}>
+                            <option value={installment.quantity} key={installment.quantity}>
                               {installment.quantity}x de {installment.formattedAmount}
                             </option>
                           ))}
@@ -281,8 +289,8 @@ const Checkout = () => {
 
             </>
           </Card>
-          <Button type="submit" onClick={form.handleSubmit} title="clique aqui para finalizar a compra">
-            Finalizar compra
+          <Button type="submit" onClick={form.handleSubmit} title="clique aqui para finalizar a compra" disabled={isLoading}>
+            {isLoading ? 'Finalizando compra...' : 'Finalizar compra'}
           </Button>
         </form>
       )}
